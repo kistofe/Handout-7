@@ -89,15 +89,13 @@ void j1Map::PropagateDijkstra()
 					cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
 					frontier.Push(neighbors[i], new_cost);
 					visited.add(neighbors[i]);
+					breadcrumbs.add(curr);
 				}
 			}
 		}
 		
 	}
-
-
-
-
+	
 }
 
 int j1Map::MovementCost(int x, int y) const
