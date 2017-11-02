@@ -78,11 +78,10 @@ void j1Map::PropagateDijkstra()
 			{
 				if (!cost_so_far[neighbors[i].x][neighbors[i].y] || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
 				{
-					if (visited.find(neighbors[i]) == -1)
+					if (new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
 					{
 						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
 						frontier.Push(neighbors[i], new_cost);
-						visited.add(neighbors[i]);
 						breadcrumbs.add(curr);
 					}
 				}
@@ -116,7 +115,7 @@ void j1Map::PropagateAstar()
 					if (visited.find(neighbors[i]) == -1)
 					{
 						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
-						frontier.Push(neighbors[i], (new_cost + curr.DistanceTo(goal)));//TODO 2
+						frontier.Push(neighbors[i], (new_cost + neighbors[i].DistanceManhattan(goal)));
 						visited.add(neighbors[i]);
 						breadcrumbs.add(curr);
 					}
