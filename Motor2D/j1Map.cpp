@@ -60,34 +60,40 @@ void j1Map::PropagateDijkstra()
 	// TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
 	// use the 2 dimensional array "cost_so_far" to track the accumulated costs
 	// on each cell (is already reset to 0 automatically)
-	iPoint curr;
-	uint new_cost;
-	if (frontier.Pop(curr))
+	if (visited.find(goal) == -1)
 	{
-		iPoint neighbors[4];
-		neighbors[0].create(curr.x + 1, curr.y + 0);
-		neighbors[1].create(curr.x + 0, curr.y + 1);
-		neighbors[2].create(curr.x - 1, curr.y + 0);
-		neighbors[3].create(curr.x + 0, curr.y - 1);
-
-		for (uint i = 0; i < 4; ++i)
+		iPoint curr;
+		uint new_cost;
+		if (frontier.Pop(curr))
 		{
-			new_cost = cost_so_far[curr.x][curr.y] + MovementCost(neighbors[i].x, neighbors[i].y);
-						
-			if (neighbors[i].x >= 0 && neighbors[i].x < data.width && neighbors[i].y >= 0 && neighbors[i].y < data.height)
+			iPoint neighbors[4];
+			neighbors[0].create(curr.x + 1, curr.y + 0);
+			neighbors[1].create(curr.x + 0, curr.y + 1);
+			neighbors[2].create(curr.x - 1, curr.y + 0);
+			neighbors[3].create(curr.x + 0, curr.y - 1);
+
+			
+			for (uint i = 0; i < 4; ++i)
 			{
-				if (!cost_so_far[neighbors[i].x][neighbors[i].y] || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
+				new_cost = cost_so_far[curr.x][curr.y] + MovementCost(neighbors[i].x, neighbors[i].y);
+				
+				if (neighbors[i].x >= 0 && neighbors[i].x < data.width && neighbors[i].y >= 0 && neighbors[i].y < data.height)
 				{
-					if (new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
+					if (!cost_so_far[neighbors[i].x][neighbors[i].y] || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
 					{
-						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
-						frontier.Push(neighbors[i], new_cost);
-						breadcrumbs.add(curr);
+						if (visited.find(neighbors[i]) == -1)
+						{
+							cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
+							frontier.Push(neighbors[i], new_cost);
+							visited.add(neighbors[i]);
+							breadcrumbs.add(curr);
+						}
 					}
 				}
 			}
+
 		}
-		
+
 	}
 	
 }
@@ -107,16 +113,17 @@ void j1Map::PropagateAstar()
 		for (uint i = 0; i < 4; ++i)
 		{
 			new_cost = cost_so_far[curr.x][curr.y] + MovementCost(neighbors[i].x, neighbors[i].y);
+			if (curr == goal)
+				break;
 
-			if (neighbors[i].x >= 0 && neighbors[i].x < data.width && neighbors[i].y >= 0 && neighbors[i].y < data.height)
+			if (neighbors[i].x >= 0 && neighbors[i].x < data.width && neighbors[i].y >= 0 && neighbors[i].y < data.height)//Map limits
 			{
 				if (!cost_so_far[neighbors[i].x][neighbors[i].y] || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
 				{
-					if (visited.find(neighbors[i]) == -1)
+					if (new_cost > cost_so_far[neighbors[i].x][neighbors[i].y])
 					{
 						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
-						frontier.Push(neighbors[i], (new_cost + neighbors[i].DistanceManhattan(goal)));
-						visited.add(neighbors[i]);
+						frontier.Push(neighbors[i], new_cost + neighbors[i].DistanceManhattan(goal));
 						breadcrumbs.add(curr);
 					}
 				}
